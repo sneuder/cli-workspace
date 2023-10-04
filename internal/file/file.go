@@ -1,17 +1,21 @@
 package file
 
 import (
+	"fmt"
 	"os"
+	"path"
+	"workspace/internal/config"
 )
 
-var filePath string
 var file *os.File
-var fileName string = "dockerfile"
+var fullPathFile string
 
-func Open() {
-	f, err := os.Create(fileName)
+func Open(fileName string, pathDir string) {
+	fullPathFile = path.Join(pathDir, fileName)
+	f, err := os.Create(fullPathFile)
 
 	if err != nil {
+		println(err)
 		return
 	}
 
@@ -24,7 +28,7 @@ func Write(data []byte) {
 	if isFileEmpty() {
 		content = data
 	} else {
-		content = append([]byte("\n\n"), data...)
+		content = append([]byte("\n"), data...)
 	}
 
 	_, err := file.Write(content)
@@ -32,6 +36,11 @@ func Write(data []byte) {
 	if err != nil {
 		return
 	}
+}
+
+func Read(filePath string) string {
+	data, _ := os.ReadFile(filePath)
+	return string(data)
 }
 
 func isFileEmpty() bool {
@@ -44,12 +53,16 @@ func isFileEmpty() bool {
 	return fileInfo.Size() == 0
 }
 
+func Rename(oldName string, newName string) {
+	oldNamePath := path.Join(config.PathDirs["workspaces"], oldName)
+	newNamePath := path.Join(config.PathDirs["workspaces"], newName)
+
+	err := os.Rename(oldNamePath, newNamePath)
+	if err != nil {
+		fmt.Println("Error renaming the file:", err)
+	}
+}
+
 func Close() {
 	file.Close()
 }
-
-func SetFilePath(newFilePath string) {
-	filePath = newFilePath
-}
-
-func resetVariables() {}

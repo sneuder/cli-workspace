@@ -2,26 +2,54 @@ package cmd
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
-	"workspace/internal/cmd/action"
+	"workspace/internal/cmd/basics"
+	"workspace/internal/cmd/workspace"
 )
 
-var actionsMap = make(map[string]Action)
+type ActionCMD func([]string)
+
+var actionsCMD = map[string]map[string]ActionCMD{
+	"workspace": {
+		"workspace": workspace.DecribeCMD,
+		"create":    workspace.Create,
+		"run":       workspace.Run,
+		"stope":     workspace.Stop,
+		"remove":    workspace.Remove,
+		"ls":        workspace.Ls,
+	},
+	"clear": {
+		"clear": basics.Clear,
+	},
+	"version": {
+		"version": basics.Version,
+	},
+	"help": {
+		"help": basics.Help,
+	},
+	"exit": {
+		"exit": basics.Exit,
+	},
+}
 
 func StartTerminal() {
-	setSetting()
 
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print("workspace > ")
+		print("workspace > ")
 
 		input := receiveInput(reader)
 		input = strings.TrimSpace(input)
 
-		receiveAction(input)
+		if input == "" {
+			continue
+		}
+
+		inputs := fromStringToArray(input)
+
+		receiveAction(inputs)
 	}
 }
 
@@ -29,37 +57,31 @@ func receiveInput(reader *bufio.Reader) string {
 	input, err := reader.ReadString('\n')
 
 	if err != nil {
-		fmt.Println("error reading input:", err)
+		println("error reading input:", err)
 		return "error reading input"
 	}
 
 	return input
 }
 
-type Action func()
+func receiveAction(actionKeys []string) {
 
-func receiveAction(actionKey string) {
-	action, exists := actionsMap[actionKey]
+	if len(actionKeys) == 1 {
+		actionKeys = append(actionKeys, actionKeys[0])
+	}
+
+	storeActions := actionsCMD[actionKeys[0]]
+	action, exists := storeActions[actionKeys[1]]
 
 	if !exists {
-		fmt.Println("command not found")
+		println("command not found")
 		return
 	}
 
-	action()
+	action(actionKeys[2:])
 }
 
-func setSetting() {
-	setActions()
-}
-
-func setActions() {
-	// basics
-	actionsMap["version"] = action.Version
-	actionsMap["help"] = action.Help
-	actionsMap["clear"] = action.Clear
-	actionsMap["exit"] = action.Exit
-
-	// workspace
-	actionsMap["workspace"] = action.Workspace
+func fromStringToArray(str string) []string {
+	words := strings.Split(str, " ")
+	return words
 }

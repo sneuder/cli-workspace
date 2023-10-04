@@ -4,23 +4,45 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"path"
+	"workspace/internal/config"
 )
 
-func StartContainerProcess() {
+var buildContainerCMD = []string{}
+
+func StartContainerProcess(dataContainer map[string]string) {
+	setInitializer()
+	setBindMount(dataContainer["bindMount"])
+	setContainerName(dataContainer["name"])
+
+	fmt.Println(buildContainerCMD)
 	buildContainer()
 }
 
 func buildContainer() {
-	cmd := exec.Command("docker", "run", "-d", "--name", "testing", "testing")
+	cmd := exec.Command(buildContainerCMD[0], buildContainerCMD[1:]...)
 
-	output, err := cmd.Output()
-
-	outputStr := string(output)
+	_, err := cmd.Output()
 
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
-	fmt.Println(outputStr)
-	// docker run -d -p <host_port>:<container_port> --name <container_name> <image>
+func setInitializer() {
+	buildContainerCMD = append(buildContainerCMD, "docker", "run", "-d")
+}
+
+func setContainerName(workspaceName string) {
+	buildContainerCMD = append(buildContainerCMD, "--name", workspaceName, workspaceName)
+}
+
+func setExposePort() {
+
+}
+
+func setBindMount(pathBindMount string) {
+	fullPathBindMount := path.Join(config.BasePath, pathBindMount)
+	bindMountPartCMD := `type=bind,source=` + fullPathBindMount + `,target=/workspace`
+	buildContainerCMD = append(buildContainerCMD, "--mount", bindMountPartCMD)
 }
