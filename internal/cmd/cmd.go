@@ -15,7 +15,7 @@ var actionsCMD = map[string]map[string]ActionCMD{
 		"workspace": workspace.DecribeCMD,
 		"create":    workspace.Create,
 		"run":       workspace.Run,
-		"stope":     workspace.Stop,
+		"stop":      workspace.Stop,
 		"remove":    workspace.Remove,
 		"ls":        workspace.Ls,
 	},
