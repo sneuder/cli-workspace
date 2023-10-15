@@ -29,3 +29,9 @@ func StringToMap(data string, dividir string) map[string]string {
 
 	return configMap
 }
+
+func JoinPathArgs(partsPath []string) string {
+	argPath := strings.Join(partsPath[0:], " ")
+	argPath = strings.Trim(argPath, `"'`)
+	return argPath
+}

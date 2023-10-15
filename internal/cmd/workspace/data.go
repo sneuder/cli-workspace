@@ -4,39 +4,43 @@ import (
 	"workspace/internal/model"
 )
 
-var orderToGetData = []string{"image", "tools", "ports", "bindMount"}
+var orderToGetData = []string{"image", "tools", "ports", "bindmount"}
 
 var dataWorkspace = map[string]model.DataWorkspace{
 	"name": {
-		Text:     "Name for workspace: ",
-		Value:    "",
-		Required: true,
+		Text:       "Name for workspace: ",
+		Value:      "",
+		Required:   true,
+		FullFilled: false,
 	},
 	"image": {
-		Text:     "Image for workspace: ",
-		Value:    "",
-		Required: true,
+		Text:       "Image for workspace: ",
+		Value:      "",
+		Required:   true,
+		FullFilled: false,
 	},
 	"tools": {
-		Text:     "Tools to include: ",
-		List:     []string{"git", "make"},
-		Value:    "",
-		Required: false,
+		Text:       "Tools to include: ",
+		Value:      "",
+		Required:   false,
+		FullFilled: false,
 	},
-	"bindMount": {
-		Text:     "Path for workspace: ",
-		Value:    "",
-		Required: true,
+	"bindmount": {
+		Text:       "Path for workspace: ",
+		Value:      "",
+		Required:   true,
+		FullFilled: false,
 	},
 	"ports": {
-		Text:     "Exposed ports: ",
-		Value:    "",
-		Required: false,
+		Text:       "Exposed ports: ",
+		Value:      "",
+		Required:   false,
+		FullFilled: false,
 	},
 }
 
 var dataContainer = map[string]string{
 	"name":      "",
-	"bindMount": "",
+	"bindmount": "",
 	"ports":     "",
 }

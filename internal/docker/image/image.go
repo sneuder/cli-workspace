@@ -21,7 +21,7 @@ func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
 	setCMD()
 
 	file.Close()
-	buildImage(dataWorkspace["name"].Value)
+	BuildImage(dataWorkspace["name"].Value)
 	file.Rename("dockerfile", dataWorkspace["name"].Value+"-workspace")
 }
 
@@ -36,6 +36,10 @@ func setUpdate() {
 }
 
 func setTools(tools string) {
+	if tools == "" {
+		return
+	}
+
 	toolToInstall := "RUN apt install " + tools + " -y"
 	file.Write([]byte(toolToInstall))
 }
@@ -46,6 +50,10 @@ func setWorkDir() {
 }
 
 func setPorts(ports string) {
+	if ports == "" {
+		return
+	}
+
 	collectionPort := strings.Split(ports, " ")
 
 	for _, port := range collectionPort {
@@ -59,7 +67,7 @@ func setCMD() {
 	file.Write([]byte(cmd))
 }
 
-func buildImage(imageName string) {
+func BuildImage(imageName string) {
 	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
 
 	output, err := cmd.Output()
@@ -71,6 +79,11 @@ func buildImage(imageName string) {
 	}
 
 	println(outputStr)
+}
+
+func Remove(workspaceName string) {
+	cmd := exec.Command("docker", "image", "rm", workspaceName)
+	cmd.Output()
 }
 
 func Exists(imageName string) bool {

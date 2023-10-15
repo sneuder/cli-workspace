@@ -5,6 +5,7 @@ import (
 	"path"
 	"workspace/internal/config"
 	"workspace/internal/docker/container"
+	"workspace/internal/docker/image"
 	"workspace/internal/file"
 	"workspace/internal/util"
 )
@@ -16,7 +17,8 @@ func Run(args []string) {
 		return
 	}
 
-	containerState := getState(args[0])
+	workspaceName := args[0]
+	containerState := getState(workspaceName)
 
 	if containerState == Nonexistent {
 		fmt.Println("workspace does not exists")
@@ -25,17 +27,30 @@ func Run(args []string) {
 
 	// if the container exists and we do not have to built it again
 	if containerState == Built {
-		container.Run(args[0])
+		container.Run(workspaceName)
 		return
 	}
 
-	dataContainer["name"] = args[0]
+	// if someone remove the image
+	if containerState == Inactive {
+		rebuildImage(workspaceName)
+	}
+
+	// build the container process
+
+	dataContainer["name"] = workspaceName
 
 	contentFile := file.Read(path.Join(config.PathDirs["workspaces"], dataContainer["name"]+"-config"))
 	contentFileMap := util.StringToMap(contentFile, "=")
 
-	dataContainer["bindMount"] = contentFileMap["BINDMOUNTPATH"]
+	dataContainer["bindmount"] = contentFileMap["BINDMOUNTPATH"]
 	dataContainer["ports"] = contentFileMap["EXPOSEPORTS"]
 
 	container.StartContainerProcess(dataContainer)
+}
+
+func rebuildImage(workspaceName string) {
+	file.Rename(workspaceName+"-workspace", "dockerfile")
+	image.BuildImage(workspaceName)
+	file.Rename("dockerfile", workspaceName+"-workspace")
 }

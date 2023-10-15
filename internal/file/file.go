@@ -72,10 +72,11 @@ func FileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func ReadDir() {
+func Remove(fileName string) {
+	err := os.Remove(fileName)
 
-}
-
-func FilterFiles() {
-
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 }

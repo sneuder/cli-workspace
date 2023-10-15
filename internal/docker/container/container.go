@@ -13,7 +13,7 @@ var buildContainerCMD = []string{}
 func StartContainerProcess(dataContainer map[string]string) {
 	setInitializer()
 
-	setBindMount(dataContainer["bindMount"])
+	setBindMount(dataContainer["bindmount"])
 	setExposePort(dataContainer["ports"])
 	setContainerName(dataContainer["name"])
 
@@ -39,6 +39,10 @@ func setContainerName(workspaceName string) {
 }
 
 func setExposePort(exposePorts string) {
+	if exposePorts == "" {
+		return
+	}
+
 	collectionPort := strings.Split(exposePorts, " ")
 
 	for _, port := range collectionPort {
@@ -59,5 +63,10 @@ func Run(workspaceName string) {
 
 func Stop(workspaceName string) {
 	cmd := exec.Command("docker", "container", "stop", workspaceName)
+	cmd.Output()
+}
+
+func Remove(workspaceName string) {
+	cmd := exec.Command("docker", "container", "rm", workspaceName)
 	cmd.Output()
 }

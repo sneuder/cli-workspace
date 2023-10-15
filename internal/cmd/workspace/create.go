@@ -48,7 +48,7 @@ func getDataWorkspace() {
 	for i := 0; i < len(orderToGetData); i++ {
 		data := dataWorkspace[orderToGetData[i]]
 
-		if data.Value != "" {
+		if data.FullFilled {
 			continue
 		}
 
@@ -71,7 +71,7 @@ func setConfigFile() {
 	fileName := dataWorkspace["name"].Value + "-config"
 	file.Open(fileName, config.PathDirs["workspaces"])
 
-	file.Write([]byte("BINDMOUNTPATH=" + dataWorkspace["bindMount"].Value))
+	file.Write([]byte("BINDMOUNTPATH=" + dataWorkspace["bindmount"].Value))
 	file.Write([]byte("EXPOSEPORTS=" + dataWorkspace["ports"].Value))
 
 	file.Close()
