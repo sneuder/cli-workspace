@@ -46,7 +46,20 @@ linux_32:
 message_success:
 	@echo "Build successful for: $(MESSAGE)"
 
-clean:
+# zipping files
+
+zip: clean-zip
+	@for file in $(wildcard $(OUTPUT_DIR)/*); do \
+		filename=$$(basename $$file); \
+		zip -r $(OUTPUT_DIR)/$$filename.zip $$file; \
+		echo "Zip archive created: $$filename.zip"; \
+	done
+
+clean-zip:
+	@rm -f $(OUTPUT_DIR)/*.zip
+	@echo "All zip files files removed"
+
+clean-compile:
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_64_NAME).exe
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_32_NAME).exe
 	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_NAME)
