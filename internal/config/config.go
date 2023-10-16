@@ -26,11 +26,12 @@ func Config() {
 }
 
 func setVariablesOS() {
-	BasePath = "~"
-
 	if runtime.GOOS == "windows" {
 		BasePath = os.Getenv("UserProfile")
+		return
 	}
+
+	BasePath = os.Getenv("HOME")
 }
 
 func buildDirs() {

@@ -1,5 +1,5 @@
 {
-  "name": "workspace",
+  "name": "cliworkspace",
   "image": "golang:1.21.1-bookworm",
   "tools": ["git", "make"],
   "ports": []
