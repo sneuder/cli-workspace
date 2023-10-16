@@ -1,21 +1,23 @@
 # Variables for output directory names
-WINDOWS_64_DIR_NAME = windows-amd64
-WINDOWS_32_DIR_NAME = windows-386
-LINUX_64_DIR_NAME = linux-amd64
-LINUX_32_DIR_NAME = linux-386
+WINDOWS_64_NAME = windows-amd64
+WINDOWS_32_NAME = windows-386
+LINUX_64_NAME = linux-amd64
+LINUX_32_NAME = linux-386
 
 # Name of the output binary
 OUTPUT_BINARY = workspace
 
+# Version
+VERSION = 1.0.0
+
 # Variables for output directories
-WINDOWS_64_DIR = bin/windows/$(WINDOWS_64_DIR_NAME)
-WINDOWS_32_DIR = bin/windows/$(WINDOWS_32_DIR_NAME)
-LINUX_64_DIR = bin/linux/$(LINUX_64_DIR_NAME)
-LINUX_32_DIR = bin/linux/$(LINUX_32_DIR_NAME)
+OUTPUT_DIR = bin/$(VERSION)
 
 PATH_MAIN = cmd/workspace/main.go
 
 .PHONY: all windows linux clean
+
+# Processes
 
 all: windows linux
 
@@ -24,30 +26,29 @@ windows: windows_64 windows_32
 linux: linux_64 linux_32
 
 windows_64:
-	@GOOS=windows GOARCH=amd64 go build -o $(WINDOWS_64_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_64_DIR_NAME).exe $(PATH_MAIN)
-	@make -s message_success MESSAGE=$(WINDOWS_64_DIR_NAME)
+	@GOOS=windows GOARCH=amd64 go build -o $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_64_NAME).exe $(PATH_MAIN)
+	@make -s message_success MESSAGE=$(WINDOWS_64_NAME)
 
 windows_32:
-	@GOOS=windows GOARCH=386 go build -o $(WINDOWS_32_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_32_DIR_NAME).exe $(PATH_MAIN)
-	@make -s message_success MESSAGE=$(WINDOWS_32_DIR_NAME)
+	@GOOS=windows GOARCH=386 go build -o $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_32_NAME).exe $(PATH_MAIN)
+	@make -s message_success MESSAGE=$(WINDOWS_32_NAME)
 
 linux_64:
-	@GOOS=linux GOARCH=amd64 go build -o $(LINUX_64_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_DIR_NAME) $(PATH_MAIN)
-	@chmod +x $(LINUX_64_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_DIR_NAME)
-	@make -s message_success MESSAGE=$(LINUX_64_DIR_NAME)
+	@GOOS=linux GOARCH=amd64 go build -o $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_NAME) $(PATH_MAIN)
+	@chmod +x $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_NAME)
+	@make -s message_success MESSAGE=$(LINUX_64_NAME)
 
 linux_32:
-	@GOOS=linux GOARCH=386 go build -o $(LINUX_32_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_DIR_NAME) $(PATH_MAIN)
-	@chmod +x $(LINUX_32_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_DIR_NAME)
-	@make -s message_success MESSAGE=$(LINUX_32_DIR_NAME)
+	@GOOS=linux GOARCH=386 go build -o $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_NAME) $(PATH_MAIN)
+	@chmod +x $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_NAME)
+	@make -s message_success MESSAGE=$(LINUX_32_NAME)
 
 message_success:
 	@echo "Build successful for: $(MESSAGE)"
 
 clean:
-	rm -f $(WINDOWS_64_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_64_DIR_NAME).exe
-	rm -f $(WINDOWS_32_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_32_DIR_NAME).exe
-	rm -f $(LINUX_64_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_DIR_NAME)
-	rm -f $(LINUX_32_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_DIR_NAME)
+	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_64_NAME).exe
+	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(WINDOWS_32_NAME).exe
+	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_64_NAME)
+	rm -f $(OUTPUT_DIR)/$(OUTPUT_BINARY)-$(LINUX_32_NAME)
 	rm -rf bin
-	
