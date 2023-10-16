@@ -18,6 +18,7 @@ func StartContainerProcess(dataContainer map[string]string) {
 	setContainerName(dataContainer["name"])
 
 	buildContainer()
+	resetContainerCMD()
 }
 
 func Run(workspaceName string) {
@@ -71,4 +72,8 @@ func setBindMount(pathBindMount string) {
 	fullPathBindMount := path.Join(config.BasePath, pathBindMount)
 	bindMountPartCMD := `type=bind,source=` + fullPathBindMount + `,target=/workspace`
 	buildContainerCMD = append(buildContainerCMD, "--mount", bindMountPartCMD)
+}
+
+func resetContainerCMD() {
+	buildContainerCMD = []string{}
 }

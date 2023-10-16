@@ -20,6 +20,11 @@ func Run(args []string) {
 	workspaceName := args[0]
 	containerState := getState(workspaceName)
 
+	if containerState == Running {
+		fmt.Println("workspace already running")
+		return
+	}
+
 	if containerState == Nonexistent {
 		fmt.Println("workspace does not exists")
 		return
@@ -47,6 +52,7 @@ func Run(args []string) {
 	dataContainer["ports"] = contentFileMap["EXPOSEPORTS"]
 
 	container.StartContainerProcess(dataContainer)
+	resetDataContainer()
 	fmt.Println("Workspace running")
 }
 
@@ -54,4 +60,10 @@ func rebuildImage(workspaceName string) {
 	file.Rename(workspaceName+"-workspace", "dockerfile")
 	image.BuildImage(workspaceName)
 	file.Rename("dockerfile", workspaceName+"-workspace")
+}
+
+func resetDataContainer() {
+	for key := range dataContainer {
+		dataContainer[key] = ""
+	}
 }
