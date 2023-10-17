@@ -21,7 +21,7 @@ type ConfigWorkspace struct {
 
 func Build(args []string) {
 	if len(args) == 0 {
-		fmt.Println("Workspace path needed")
+		fmt.Println("workspace path needed")
 		return
 	}
 
@@ -29,11 +29,11 @@ func Build(args []string) {
 	workspaceState := getState(configWorkspace.Name)
 
 	if workspaceState != Nonexistent {
-		fmt.Println("Workspace already exist. Change name in workspace.json")
+		fmt.Println("workspace already exist, change name in workspace.json")
 		return
 	}
 
-	fmt.Println("Building workspace...")
+	fmt.Println("building workspace...")
 
 	configWorkspace.BindMount = util.JoinPathArgs(args)
 	setWokspaceInfo(configWorkspace)

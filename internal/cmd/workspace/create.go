@@ -20,11 +20,11 @@ func Create(args []string) {
 	}
 
 	if len(args) != 0 && validateExistance(args[0]) {
-		fmt.Println("Workspace name already exists")
+		fmt.Println("workspace name already exists")
 		return
 	}
 
-	fmt.Println("Creating workspace...")
+	fmt.Println("creating workspace...")
 
 	// seting data
 	setArgs(args)

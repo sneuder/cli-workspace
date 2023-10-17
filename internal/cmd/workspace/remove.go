@@ -48,6 +48,8 @@ func Remove(args []string) {
 		return
 	}
 
+	fmt.Println("removing workspace...")
+
 	sequeceConnected := false
 	for _, actionSequence := range actionsSequence {
 		if actionSequence.State == containerState {
