@@ -27,9 +27,7 @@ func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
 
 func BuildImage(imageName string) {
 	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
-
 	output, err := cmd.Output()
-
 	outputStr := string(output)
 
 	if err != nil {

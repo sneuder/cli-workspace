@@ -8,12 +8,11 @@ import (
 	"strings"
 	"workspace/internal/config"
 	"workspace/internal/docker/image"
+	"workspace/internal/docker/network"
 	"workspace/internal/file"
 )
 
 func Create(args []string) {
-	// validation
-
 	if len(args) == 0 {
 		fmt.Println("workspace name needed")
 		return
@@ -31,6 +30,7 @@ func Create(args []string) {
 	getDataWorkspace()
 
 	// build process
+	// createNetwork()
 	image.StartImageProcess(dataWorkspace)
 	setConfigFile()
 
@@ -75,6 +75,7 @@ func setConfigFile() {
 
 	file.Write([]byte("BINDMOUNTPATH=" + dataWorkspace["bindmount"].Value))
 	file.Write([]byte("EXPOSEPORTS=" + dataWorkspace["ports"].Value))
+	file.Write([]byte("NETWORKS=" + dataWorkspace["networks"].Value))
 
 	file.Close()
 }
@@ -89,6 +90,22 @@ func setArgs(args []string) {
 	data := dataWorkspace["name"]
 	data.Value = workspaceName
 	dataWorkspace["name"] = data
+}
+
+func createNetwork() {
+	if dataWorkspace["networks"].Value == "" {
+		return
+	}
+
+	collectionNetwork := strings.Split(dataWorkspace["networks"].Value, " ")
+
+	for _, networkName := range collectionNetwork {
+		if network.Exists(networkName) {
+			continue
+		}
+
+		network.Create(networkName)
+	}
 }
 
 func resetWorkspaceData() {

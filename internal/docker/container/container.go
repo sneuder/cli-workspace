@@ -15,6 +15,7 @@ func StartContainerProcess(dataContainer map[string]string) {
 
 	setBindMount(dataContainer["bindmount"])
 	setExposePort(dataContainer["ports"])
+	setNetworks(dataContainer["networks"])
 	setContainerName(dataContainer["name"])
 
 	buildContainer()
@@ -72,6 +73,18 @@ func setBindMount(pathBindMount string) {
 	fullPathBindMount := path.Join(config.BasePath, pathBindMount)
 	bindMountPartCMD := `type=bind,source=` + fullPathBindMount + `,target=/workspace`
 	buildContainerCMD = append(buildContainerCMD, "--mount", bindMountPartCMD)
+}
+
+func setNetworks(networks string) {
+	if networks == "" {
+		return
+	}
+
+	collectionNetwork := strings.Split(networks, " ")
+
+	for _, network := range collectionNetwork {
+		buildContainerCMD = append(buildContainerCMD, "--network="+network)
+	}
 }
 
 func resetContainerCMD() {

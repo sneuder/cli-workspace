@@ -11,7 +11,6 @@ import (
 )
 
 func Run(args []string) {
-
 	if len(args) == 0 {
 		fmt.Println("workspace name needed")
 		return
@@ -42,7 +41,7 @@ func Run(args []string) {
 	}
 
 	// build the container process
-	fmt.Println("Stating workspace...")
+	fmt.Println("starting workspace...")
 	dataContainer["name"] = workspaceName
 
 	contentFile := file.Read(path.Join(config.PathDirs["workspaces"], dataContainer["name"]+"-config"))
@@ -50,10 +49,11 @@ func Run(args []string) {
 
 	dataContainer["bindmount"] = contentFileMap["BINDMOUNTPATH"]
 	dataContainer["ports"] = contentFileMap["EXPOSEPORTS"]
+	dataContainer["networks"] = contentFileMap["NETWORKS"]
 
 	container.StartContainerProcess(dataContainer)
 	resetDataContainer()
-	fmt.Println("Workspace running")
+	fmt.Println("workspace running")
 }
 
 func rebuildImage(workspaceName string) {
