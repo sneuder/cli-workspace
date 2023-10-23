@@ -36,11 +36,6 @@ var actionsSequence = []ActionSequence{
 }
 
 func Remove(args []string) {
-	if len(args) == 0 {
-		fmt.Println("workspace name needed")
-		return
-	}
-
 	workspaceName := args[0]
 	containerState := wsUtil.GetState(workspaceName)
 

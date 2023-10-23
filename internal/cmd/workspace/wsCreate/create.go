@@ -14,11 +14,6 @@ import (
 )
 
 func Create(args []string) {
-	if len(args) == 0 {
-		fmt.Println("workspace name needed")
-		return
-	}
-
 	if len(args) != 0 && validateExistance(args[0]) {
 		fmt.Println("workspace name already exists")
 		return

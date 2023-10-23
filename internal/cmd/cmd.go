@@ -12,12 +12,22 @@ import (
 	"workspace/internal/cmd/workspace/wsRun"
 	"workspace/internal/cmd/workspace/wsStop"
 	"workspace/internal/cmd/workspace/wsUtil"
+	"workspace/internal/constants"
+	"workspace/internal/util"
 )
 
 type ActionCMD func([]string)
 
+var subActionsToValidateArgs = []string{
+	string(constants.SubActionWSCreate),
+	string(constants.SubActionWSStop),
+	string(constants.SubActionWSRun),
+	string(constants.SubActionWSBuild),
+	string(constants.SubActionWSRemove),
+}
+
 var actionsCMD = map[string]map[string]ActionCMD{
-	"workspace": {
+	string(constants.ActionWorkspace): {
 		"workspace": wsUtil.DecribeCMD,
 		"create":    wsCreate.Create,
 		"run":       wsRun.Run,
@@ -26,16 +36,16 @@ var actionsCMD = map[string]map[string]ActionCMD{
 		"rm":        wsRemove.Remove,
 		"ls":        wsLs.Ls,
 	},
-	"clear": {
+	string(constants.ActionClear): {
 		"clear": basics.Clear,
 	},
-	"version": {
+	string(constants.ActionVersion): {
 		"version": basics.Version,
 	},
-	"help": {
+	string(constants.ActionHelp): {
 		"help": basics.Help,
 	},
-	"exit": {
+	string(constants.ActionExit): {
 		"exit": basics.Exit,
 	},
 }
@@ -79,6 +89,20 @@ func receiveAction(actionKeys []string) {
 
 	if !exists {
 		println("command not found")
+		return
+	}
+
+	existArgToValidate := util.ContainsString(subActionsToValidateArgs, actionKeys[1])
+	existsArgAction := len(actionKeys) >= 3
+
+	if existArgToValidate && !existsArgAction {
+		message := "workspace name required"
+
+		if string(constants.SubActionWSBuild) == actionKeys[1] {
+			message = "workspace.json path required"
+		}
+
+		println(message)
 		return
 	}
 

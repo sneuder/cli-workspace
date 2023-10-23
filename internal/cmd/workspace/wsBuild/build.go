@@ -17,11 +17,6 @@ import (
 var configWorkspace model.ConfigWorkspace
 
 func Build(args []string) {
-	if len(args) == 0 {
-		fmt.Println("workspace path needed")
-		return
-	}
-
 	configWorkspace = getWorkspaceConfig(args)
 	workspaceState := wsUtil.GetState(configWorkspace.Name)
 
