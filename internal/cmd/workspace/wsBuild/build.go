@@ -19,20 +19,7 @@ var configWorkspace model.ConfigWorkspace
 func Build(args []string) {
 	workspaceConfigError := getWorkspaceConfig(args)
 
-	if workspaceConfigError != nil {
-		fmt.Println("workspace.json does not exist")
-		return
-	}
-
-	if util.ContainsUpperCases(configWorkspace.Name) {
-		fmt.Println("workspace name has to be in lowercase")
-		return
-	}
-
-	workspaceState := wsUtil.GetState(configWorkspace.Name)
-
-	if workspaceState != wsData.Nonexistent {
-		fmt.Println("workspace already exists, change name in workspace.json")
+	if !canContinue(workspaceConfigError) {
 		return
 	}
 
@@ -135,11 +122,33 @@ func setWokspaceInfo() {
 // 	}
 // }
 
+func canContinue(workspaceConfigError error) bool {
+	possibleToContinue := true
+
+	if workspaceConfigError != nil {
+		fmt.Println("workspace.json does not exist")
+		possibleToContinue = false
+	}
+
+	if util.ContainsUpperCases(configWorkspace.Name) {
+		fmt.Println("workspace name has to be in lowercase")
+		possibleToContinue = false
+	}
+
+	workspaceState := wsUtil.GetState(configWorkspace.Name)
+	if workspaceState != wsData.Nonexistent {
+		fmt.Println("workspace already exists, change name")
+		possibleToContinue = false
+	}
+
+	return possibleToContinue
+}
+
 func getPathWorkSpaceInfo(args []string) string {
 	argPath := util.JoinPathArgs(args)
 	return path.Join(config.BasePath, argPath, "workspace.json")
 }
 
 func resetConfigWorkspace() {
-	// configWorkspace = un
+	configWorkspace = model.ConfigWorkspace{}
 }
