@@ -17,11 +17,17 @@ import (
 var configWorkspace model.ConfigWorkspace
 
 func Build(args []string) {
-	configWorkspace = getWorkspaceConfig(args)
+	workspaceConfigError := getWorkspaceConfig(args)
+
+	if workspaceConfigError != nil {
+		fmt.Println("workspace.json does not exist")
+		return
+	}
+
 	workspaceState := wsUtil.GetState(configWorkspace.Name)
 
 	if workspaceState != wsData.Nonexistent {
-		fmt.Println("workspace already exist, change name in workspace.json")
+		fmt.Println("workspace already exists, change name in workspace.json")
 		return
 	}
 
@@ -36,14 +42,17 @@ func Build(args []string) {
 	resetConfigWorkspace()
 }
 
-func getWorkspaceConfig(args []string) model.ConfigWorkspace {
+func getWorkspaceConfig(args []string) error {
 	workspacePath := getPathWorkSpaceInfo(args)
-	dataContent := file.Read(workspacePath)
+	dataContent, err := file.Read(workspacePath)
 
-	var configWorkspace model.ConfigWorkspace
+	if err != nil {
+		return err
+	}
+
 	json.Unmarshal([]byte(dataContent), &configWorkspace)
 
-	return configWorkspace
+	return nil
 }
 
 func setWokspaceInfo() {
@@ -65,6 +74,12 @@ func setWokspaceInfo() {
 	toolsValue := strings.Join(configWorkspace.Tools, " ")
 	wsData.DataWorkspace["tools"] = model.ValuesWorkspace{
 		Value:      toolsValue,
+		FullFilled: true,
+	}
+
+	portsValue := strings.Join(configWorkspace.Ports, " ")
+	wsData.DataWorkspace["ports"] = model.ValuesWorkspace{
+		Value:      portsValue,
 		FullFilled: true,
 	}
 

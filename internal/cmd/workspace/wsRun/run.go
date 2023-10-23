@@ -42,7 +42,7 @@ func Run(args []string) {
 	wsData.DataContainer["name"] = workspaceName
 
 	fullPathWSConfig := path.Join(config.PathDirs["workspaces"], wsData.DataContainer["name"]+"-config")
-	contentFile := file.Read(fullPathWSConfig)
+	contentFile, _ := file.Read(fullPathWSConfig)
 	contentFileMap := util.StringToMap(contentFile, "=")
 
 	wsData.DataContainer["bindmount"] = contentFileMap["BINDMOUNTPATH"]
