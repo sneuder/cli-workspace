@@ -10,7 +10,7 @@ import (
 
 var buildContainerCMD = []string{}
 
-func StartContainerProcess(dataContainer map[string]string) {
+func Create(dataContainer map[string]string) {
 	setInitializer()
 
 	setBindMount(dataContainer["bindmount"])

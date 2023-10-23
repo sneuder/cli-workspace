@@ -1,8 +1,10 @@
-package workspace
+package wsRun
 
 import (
 	"fmt"
 	"path"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 	"workspace/internal/docker/container"
 	"workspace/internal/docker/image"
@@ -17,53 +19,54 @@ func Run(args []string) {
 	}
 
 	workspaceName := args[0]
-	containerState := getState(workspaceName)
+	containerState := wsUtil.GetState(workspaceName)
 
-	if containerState == Running {
+	if containerState == wsData.Running {
 		fmt.Println("workspace already running")
 		return
 	}
 
-	if containerState == Nonexistent {
+	if containerState == wsData.Nonexistent {
 		fmt.Println("workspace does not exists")
 		return
 	}
 
 	// if the container exists and we do not have to built it again
-	if containerState == Built {
+	if containerState == wsData.Built {
 		container.Run(workspaceName)
 		return
 	}
 
 	// if someone remove the image
-	if containerState == Inactive {
+	if containerState == wsData.Inactive {
 		rebuildImage(workspaceName)
 	}
 
 	// build the container process
 	fmt.Println("starting workspace...")
-	dataContainer["name"] = workspaceName
+	wsData.DataContainer["name"] = workspaceName
 
-	contentFile := file.Read(path.Join(config.PathDirs["workspaces"], dataContainer["name"]+"-config"))
+	fullPathWSConfig := path.Join(config.PathDirs["workspaces"], wsData.DataContainer["name"]+"-config")
+	contentFile := file.Read(fullPathWSConfig)
 	contentFileMap := util.StringToMap(contentFile, "=")
 
-	dataContainer["bindmount"] = contentFileMap["BINDMOUNTPATH"]
-	dataContainer["ports"] = contentFileMap["EXPOSEPORTS"]
-	dataContainer["networks"] = contentFileMap["NETWORKS"]
+	wsData.DataContainer["bindmount"] = contentFileMap["BINDMOUNTPATH"]
+	wsData.DataContainer["ports"] = contentFileMap["EXPOSEPORTS"]
+	wsData.DataContainer["networks"] = contentFileMap["NETWORKS"]
 
-	container.StartContainerProcess(dataContainer)
+	container.Create(wsData.DataContainer)
 	resetDataContainer()
 	fmt.Println("workspace running")
 }
 
 func rebuildImage(workspaceName string) {
 	file.Rename(workspaceName+"-workspace", "dockerfile")
-	image.BuildImage(workspaceName)
+	image.Build(workspaceName)
 	file.Rename("dockerfile", workspaceName+"-workspace")
 }
 
 func resetDataContainer() {
-	for key := range dataContainer {
-		dataContainer[key] = ""
+	for key := range wsData.DataContainer {
+		wsData.DataContainer[key] = ""
 	}
 }

@@ -1,8 +1,10 @@
-package workspace
+package wsRemove
 
 import (
 	"fmt"
 	"path"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 	"workspace/internal/docker/container"
 	"workspace/internal/docker/image"
@@ -11,39 +13,38 @@ import (
 
 type ActionSequence struct {
 	Action func(string)
-	State  State
+	State  wsData.State
 }
 
 var actionsSequence = []ActionSequence{
 	{
 		Action: container.Stop,
-		State:  Running,
+		State:  wsData.Running,
 	},
 	{
 		Action: container.Remove,
-		State:  Built,
+		State:  wsData.Built,
 	},
 	{
 		Action: image.Remove,
-		State:  Instanced,
+		State:  wsData.Instanced,
 	},
 	{
 		Action: removeFile,
-		State:  Inactive,
+		State:  wsData.Inactive,
 	},
 }
 
 func Remove(args []string) {
-
 	if len(args) == 0 {
 		fmt.Println("workspace name needed")
 		return
 	}
 
 	workspaceName := args[0]
-	containerState := getState(workspaceName)
+	containerState := wsUtil.GetState(workspaceName)
 
-	if containerState == Nonexistent {
+	if containerState == wsData.Nonexistent {
 		fmt.Println("workspace does not exist")
 		return
 	}

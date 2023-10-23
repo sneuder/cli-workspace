@@ -9,7 +9,7 @@ import (
 	"workspace/internal/model"
 )
 
-func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
+func Create(dataWorkspace map[string]model.ValuesWorkspace) {
 	file.Open("dockerfile", config.PathDirs["workspaces"])
 
 	setImage(dataWorkspace["image"].Value)
@@ -21,11 +21,11 @@ func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
 	setCMD()
 
 	file.Close()
-	BuildImage(dataWorkspace["name"].Value)
+	Build(dataWorkspace["name"].Value)
 	file.Rename("dockerfile", dataWorkspace["name"].Value+"-workspace")
 }
 
-func BuildImage(imageName string) {
+func Build(imageName string) {
 	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
 	output, err := cmd.Output()
 	outputStr := string(output)
@@ -45,12 +45,7 @@ func Remove(workspaceName string) {
 func Exists(imageName string) bool {
 	cmd := exec.Command("docker", "inspect", imageName)
 	_, err := cmd.Output()
-
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 //...

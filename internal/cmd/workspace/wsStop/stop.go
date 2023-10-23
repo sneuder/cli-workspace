@@ -1,7 +1,9 @@
-package workspace
+package wsStop
 
 import (
 	"fmt"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/docker/container"
 )
 
@@ -12,14 +14,14 @@ func Stop(args []string) {
 	}
 
 	workspaceName := args[0]
-	containerState := getState(workspaceName)
+	containerState := wsUtil.GetState(workspaceName)
 
-	if containerState == Nonexistent {
+	if containerState == wsData.Nonexistent {
 		fmt.Println("workspace does not exists")
 		return
 	}
 
-	if containerState != Running {
+	if containerState != wsData.Running {
 		fmt.Println("workspace is not in running state")
 		return
 	}

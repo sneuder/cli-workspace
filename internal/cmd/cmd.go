@@ -5,20 +5,26 @@ import (
 	"os"
 	"strings"
 	"workspace/internal/cmd/basics"
-	"workspace/internal/cmd/workspace"
+	"workspace/internal/cmd/workspace/wsBuild"
+	"workspace/internal/cmd/workspace/wsCreate"
+	"workspace/internal/cmd/workspace/wsLs"
+	"workspace/internal/cmd/workspace/wsRemove"
+	"workspace/internal/cmd/workspace/wsRun"
+	"workspace/internal/cmd/workspace/wsStop"
+	"workspace/internal/cmd/workspace/wsUtil"
 )
 
 type ActionCMD func([]string)
 
 var actionsCMD = map[string]map[string]ActionCMD{
 	"workspace": {
-		"workspace": workspace.DecribeCMD,
-		"create":    workspace.Create,
-		"run":       workspace.Run,
-		"build":     workspace.Build,
-		"stop":      workspace.Stop,
-		"rm":        workspace.Remove,
-		"ls":        workspace.Ls,
+		"workspace": wsUtil.DecribeCMD,
+		"create":    wsCreate.Create,
+		"run":       wsRun.Run,
+		"build":     wsBuild.Build,
+		"stop":      wsStop.Stop,
+		"rm":        wsRemove.Remove,
+		"ls":        wsLs.Ls,
 	},
 	"clear": {
 		"clear": basics.Clear,
@@ -64,7 +70,6 @@ func receiveInput(reader *bufio.Reader) string {
 }
 
 func receiveAction(actionKeys []string) {
-
 	if len(actionKeys) == 1 {
 		actionKeys = append(actionKeys, actionKeys[0])
 	}

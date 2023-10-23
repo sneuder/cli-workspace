@@ -1,46 +1,47 @@
-package workspace
+package wsUtil
 
 import (
 	"fmt"
+	"path"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/config"
 	"workspace/internal/docker"
+	"workspace/internal/docker/image"
+	"workspace/internal/file"
 )
 
-type State string
-
-const (
-	Inactive    State = "inactive"
-	Instanced   State = "instanced"
-	Built       State = "built"
-	Running     State = "running"
-	Nonexistent State = "nonexistent"
-)
-
-func getState(workspaceName string) State {
+func GetState(workspaceName string) wsData.State {
 	containerInfo, _ := docker.GetContainerInfo(workspaceName)
 
-	exists := validateExistance(workspaceName)
+	exists := WorkspaceExists(workspaceName)
 
 	if !exists {
-		return Nonexistent
+		return wsData.Nonexistent
 	}
 
 	if containerInfo.ID == "" {
-		return Inactive
+		return wsData.Inactive
 	}
 
 	if containerInfo.State.Status == "" {
-		return Instanced
+		return wsData.Instanced
 	}
 
 	if containerInfo.State.Status == "exited" {
-		return Built
+		return wsData.Built
 	}
 
 	if containerInfo.State.Status == "running" {
-		return Running
+		return wsData.Running
 	}
 
-	return Instanced
+	return wsData.Instanced
+}
+
+func WorkspaceExists(workspaceName string) bool {
+	filePathWorkspace := path.Join(config.PathDirs["workspaces"], workspaceName+"-workspace")
+	exists := image.Exists(workspaceName) || file.FileExists(filePathWorkspace)
+	return exists
 }
 
 func DecribeCMD(args []string) {

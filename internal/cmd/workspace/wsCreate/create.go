@@ -1,4 +1,4 @@
-package workspace
+package wsCreate
 
 import (
 	"bufio"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"workspace/internal/cmd/workspace/wsData"
 	"workspace/internal/config"
 	"workspace/internal/docker/image"
 	"workspace/internal/docker/network"
@@ -30,8 +31,7 @@ func Create(args []string) {
 	getDataWorkspace()
 
 	// build process
-	// createNetwork()
-	image.StartImageProcess(dataWorkspace)
+	image.Create(wsData.DataWorkspace)
 	setConfigFile()
 
 	// reseting date
@@ -47,8 +47,8 @@ func validateExistance(workspaceName string) bool {
 func getDataWorkspace() {
 	reader := bufio.NewReader(os.Stdin)
 
-	for i := 0; i < len(orderToGetData); i++ {
-		data := dataWorkspace[orderToGetData[i]]
+	for i := 0; i < len(wsData.OrderToGetData); i++ {
+		data := wsData.DataWorkspace[wsData.OrderToGetData[i]]
 
 		if data.FullFilled {
 			continue
@@ -65,17 +65,17 @@ func getDataWorkspace() {
 		}
 
 		data.Value = input
-		dataWorkspace[orderToGetData[i]] = data
+		wsData.DataWorkspace[wsData.OrderToGetData[i]] = data
 	}
 }
 
 func setConfigFile() {
-	fileName := dataWorkspace["name"].Value + "-config"
+	fileName := wsData.DataWorkspace["name"].Value + "-config"
 	file.Open(fileName, config.PathDirs["workspaces"])
 
-	file.Write([]byte("BINDMOUNTPATH=" + dataWorkspace["bindmount"].Value))
-	file.Write([]byte("EXPOSEPORTS=" + dataWorkspace["ports"].Value))
-	file.Write([]byte("NETWORKS=" + dataWorkspace["networks"].Value))
+	file.Write([]byte("BINDMOUNTPATH=" + wsData.DataWorkspace["bindmount"].Value))
+	file.Write([]byte("EXPOSEPORTS=" + wsData.DataWorkspace["ports"].Value))
+	file.Write([]byte("NETWORKS=" + wsData.DataWorkspace["networks"].Value))
 
 	file.Close()
 }
@@ -87,17 +87,17 @@ func setArgs(args []string) {
 
 	workspaceName := args[0]
 
-	data := dataWorkspace["name"]
+	data := wsData.DataWorkspace["name"]
 	data.Value = workspaceName
-	dataWorkspace["name"] = data
+	wsData.DataWorkspace["name"] = data
 }
 
 func createNetwork() {
-	if dataWorkspace["networks"].Value == "" {
+	if wsData.DataWorkspace["networks"].Value == "" {
 		return
 	}
 
-	collectionNetwork := strings.Split(dataWorkspace["networks"].Value, " ")
+	collectionNetwork := strings.Split(wsData.DataWorkspace["networks"].Value, " ")
 
 	for _, networkName := range collectionNetwork {
 		if network.Exists(networkName) {
@@ -109,8 +109,8 @@ func createNetwork() {
 }
 
 func resetWorkspaceData() {
-	for key, itemData := range dataWorkspace {
+	for key, itemData := range wsData.DataWorkspace {
 		itemData.Value = ""
-		dataWorkspace[key] = itemData
+		wsData.DataWorkspace[key] = itemData
 	}
 }

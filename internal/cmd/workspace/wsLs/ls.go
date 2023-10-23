@@ -1,9 +1,10 @@
-package workspace
+package wsLs
 
 import (
 	"fmt"
 	"os"
 	"strings"
+	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 )
 
@@ -23,6 +24,6 @@ func Ls(args []string) {
 		}
 
 		fileName = strings.Replace(fileName, "-workspace", "", -1)
-		fmt.Printf("- %-10s %s\n", fileName, getState(fileName))
+		fmt.Printf("- %-10s %s\n", fileName, wsUtil.GetState(fileName))
 	}
 }
