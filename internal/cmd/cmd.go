@@ -92,6 +92,14 @@ func receiveAction(actionKeys []string) {
 		return
 	}
 
+	if !existActionArgs(actionKeys) {
+		return
+	}
+
+	action(actionKeys[2:])
+}
+
+func existActionArgs(actionKeys []string) bool {
 	existArgToValidate := util.ContainsString(subActionsToValidateArgs, actionKeys[1])
 	existsArgAction := len(actionKeys) >= 3
 
@@ -103,8 +111,8 @@ func receiveAction(actionKeys []string) {
 		}
 
 		println(message)
-		return
+		return false
 	}
 
-	action(actionKeys[2:])
+	return true
 }
