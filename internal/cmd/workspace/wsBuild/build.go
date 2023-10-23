@@ -123,25 +123,23 @@ func setWokspaceInfo() {
 // }
 
 func canContinue(workspaceConfigError error) bool {
-	possibleToContinue := true
-
 	if workspaceConfigError != nil {
 		fmt.Println("workspace.json does not exist")
-		possibleToContinue = false
+		return false
 	}
 
 	if util.ContainsUpperCases(configWorkspace.Name) {
 		fmt.Println("workspace name has to be in lowercase")
-		possibleToContinue = false
+		return false
 	}
 
 	workspaceState := wsUtil.GetState(configWorkspace.Name)
 	if workspaceState != wsData.Nonexistent {
 		fmt.Println("workspace already exists, change name")
-		possibleToContinue = false
+		return false
 	}
 
-	return possibleToContinue
+	return true
 }
 
 func getPathWorkSpaceInfo(args []string) string {
