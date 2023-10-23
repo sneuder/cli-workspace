@@ -44,3 +44,8 @@ func ContainsString(slice []string, target string) bool {
 	}
 	return false
 }
+
+func ContainsUpperCases(stringToEvaluate string) bool {
+	baseString := stringToEvaluate
+	return baseString != strings.ToLower(stringToEvaluate)
+}

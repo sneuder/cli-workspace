@@ -24,6 +24,11 @@ func Build(args []string) {
 		return
 	}
 
+	if util.ContainsUpperCases(configWorkspace.Name) {
+		fmt.Println("workspace name has to be in lowercase")
+		return
+	}
+
 	workspaceState := wsUtil.GetState(configWorkspace.Name)
 
 	if workspaceState != wsData.Nonexistent {
