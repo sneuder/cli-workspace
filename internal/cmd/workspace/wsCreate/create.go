@@ -19,7 +19,7 @@ func Create(args []string) {
 		return
 	}
 
-	fmt.Println("creating workspace...")
+	fmt.Println("creating workspace")
 
 	// seting data
 	setArgs(args)

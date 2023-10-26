@@ -22,14 +22,20 @@ func Create(dataContainer map[string]string) {
 	resetContainerCMD()
 }
 
-func Run(workspaceName string) {
-	cmd := exec.Command("docker", "start", workspaceName)
+func Run(containerName string) {
+	cmd := exec.Command("docker", "start", containerName)
 	cmd.Output()
 }
 
 func Stop(workspaceName string) {
 	cmd := exec.Command("docker", "container", "stop", workspaceName)
 	cmd.Output()
+}
+
+func Exists(containerName string) bool {
+	cmd := exec.Command("docker", "container", "inspect", containerName)
+	_, err := cmd.Output()
+	return err == nil
 }
 
 func Remove(workspaceName string) {
@@ -41,7 +47,6 @@ func Remove(workspaceName string) {
 
 func buildContainer() {
 	cmd := exec.Command(buildContainerCMD[0], buildContainerCMD[1:]...)
-
 	_, err := cmd.Output()
 
 	if err != nil {

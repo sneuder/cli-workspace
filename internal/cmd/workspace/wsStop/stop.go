@@ -21,6 +21,6 @@ func Stop(args []string) {
 		return
 	}
 
-	fmt.Println("stopping workspace...")
+	fmt.Println("stopping workspace")
 	container.Stop(workspaceName)
 }

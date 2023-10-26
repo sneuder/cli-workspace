@@ -26,12 +26,13 @@ func Run(args []string) {
 	}
 
 	// build the container process
+	fmt.Println("starting workspace")
+
 	wsData.DataContainer["name"] = workspaceName
 	getDataFromFileConfig()
 	container.Create(wsData.DataContainer)
 
 	resetDataContainer()
-	fmt.Println("workspace running")
 }
 
 func rebuildImage(workspaceName string) {
@@ -67,12 +68,14 @@ func canContinue(containerState wsData.State) bool {
 func canContinueBasedOnAction(workspaceName string, containerState wsData.State) bool {
 	// if the container exists and we do not have to built it again
 	if containerState == wsData.Built {
+		fmt.Println("starting workspace")
 		container.Run(workspaceName)
 		return false
 	}
 
 	// if someone remove the image
 	if containerState == wsData.Inactive {
+		fmt.Println("building workspace")
 		rebuildImage(workspaceName)
 		return true
 	}

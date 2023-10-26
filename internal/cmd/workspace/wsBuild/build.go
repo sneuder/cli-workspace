@@ -7,8 +7,10 @@ import (
 	"strings"
 	"workspace/internal/cmd/workspace/wsCreate"
 	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsRun"
 	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
+	"workspace/internal/docker/database"
 	"workspace/internal/file"
 	"workspace/internal/model"
 	"workspace/internal/util"
@@ -23,14 +25,16 @@ func Build(args []string) {
 		return
 	}
 
-	fmt.Println("building workspace...")
-
+	fmt.Println("building workspace")
 	configWorkspace.BindMount = util.JoinPathArgs(args)
 	setWokspaceInfo()
 
 	args[0] = configWorkspace.Name
 
 	wsCreate.Create(args)
+	wsRun.Run(args)
+
+	buildDatabase()
 	resetConfigWorkspace()
 }
 
@@ -82,46 +86,6 @@ func setWokspaceInfo() {
 	}
 }
 
-// func setDatabaseInfo() {
-// 	for _, configDatabase := range configWorkspace.Databases {
-// 		configInformation := map[string]model.DataConfig{
-// 			"name": {
-// 				Text:       "Name: ",
-// 				Value:      configDatabase.Name,
-// 				Required:   true,
-// 				FullFilled: false,
-// 			},
-// 			"type": {
-// 				Text:       "Database Type: ",
-// 				Value:      configDatabase.Type,
-// 				Required:   true,
-// 				FullFilled: false,
-// 			},
-// 			"networks": {
-// 				Text:       "Networks: ",
-// 				Value:      strings.Join(configDatabase.Networks, " "),
-// 				Required:   false,
-// 				FullFilled: false,
-// 			},
-// 			"ports": {
-// 				Text:       "Exposed ports: ",
-// 				Value:      strings.Join(configDatabase.Ports, " "),
-// 				Required:   false,
-// 				FullFilled: false,
-// 			},
-// 		}
-
-// 		dataDBs = append(dataDBs, configInformation)
-// 	}
-// }
-
-// func createDatabase() {
-// 	setDatabaseInfo()
-// 	for _, dataDB := range dataDBs {
-// 		database.ExistsOrCreate(dataDB)
-// 	}
-// }
-
 func canContinue(workspaceConfigError error) bool {
 	if workspaceConfigError != nil {
 		fmt.Println("workspace.json does not exist")
@@ -135,11 +99,22 @@ func canContinue(workspaceConfigError error) bool {
 
 	workspaceState := wsUtil.GetState(configWorkspace.Name)
 	if workspaceState != wsData.Nonexistent {
-		fmt.Println("workspace already exists, change name")
+		fmt.Println("workspace already exists")
 		return false
 	}
 
 	return true
+}
+
+func buildDatabase() {
+	fmt.Println("building databases...")
+	if len(configWorkspace.Databases) == 0 {
+		return
+	}
+
+	for _, db := range configWorkspace.Databases {
+		database.Build(db)
+	}
 }
 
 func getPathWorkSpaceInfo(args []string) string {

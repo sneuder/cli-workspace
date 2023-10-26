@@ -1,7 +1,25 @@
 {
-  "name": "cliworkspace",
+  "name": "cliworkspacess",
   "image": "golang:1.21.1-bookworm",
   "tools": ["git", "make", "zip"],
   "networks": ["mynetwork"],
-  "ports": []
+  "ports": [],
+  "databases": [{
+    "name": "testindb1",
+    "type": "mysql",
+    "networks": ["mynetwork"],
+    "ports": ["2737"]
+  },
+  {
+    "name": "testindb2",
+    "type": "postgres",
+    "networks": ["mynetwork"],
+    "ports": ["4030"]
+  },
+  {
+    "name": "testindb3",
+    "type": "mysql",
+    "networks": ["mynetwork"],
+    "ports": ["2138"]
+  }]
 }

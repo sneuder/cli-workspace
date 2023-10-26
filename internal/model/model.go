@@ -8,12 +8,20 @@ type ValuesWorkspace struct {
 }
 
 type ConfigWorkspace struct {
-	Name      string   `json:"name"`
-	Image     string   `json:"image"`
-	BindMount string   `json:"bindMount"`
-	Networks  []string `json:"networks"`
-	Tools     []string `json:"tools"`
-	Ports     []string `json:"ports"`
+	Name      string              `json:"name"`
+	Image     string              `json:"image"`
+	BindMount string              `json:"bindMount"`
+	Networks  []string            `json:"networks"`
+	Tools     []string            `json:"tools"`
+	Ports     []string            `json:"ports"`
+	Databases []ConfigWorkspaceDB `json:"databases"`
+}
+
+type ConfigWorkspaceDB struct {
+	Name     string   `json:"name"`
+	Type     string   `json:"type"`
+	Networks []string `json:"networks"`
+	Ports    []string `json:"ports"`
 }
 
 type ContainerState struct {

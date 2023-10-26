@@ -12,7 +12,6 @@ import (
 
 func GetState(workspaceName string) wsData.State {
 	containerInfo, _ := docker.GetContainerInfo(workspaceName)
-
 	exists := WorkspaceExists(workspaceName)
 
 	if !exists {

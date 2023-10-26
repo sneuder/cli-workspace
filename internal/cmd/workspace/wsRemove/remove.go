@@ -16,7 +16,7 @@ type ActionSequence struct {
 	State  wsData.State
 }
 
-var actionsSequence = []ActionSequence{
+var actionsWSSequence = []ActionSequence{
 	{
 		Action: container.Stop,
 		State:  wsData.Running,
@@ -35,6 +35,17 @@ var actionsSequence = []ActionSequence{
 	},
 }
 
+var actionsDBSequence = []ActionSequence{
+	{
+		Action: container.Stop,
+		State:  wsData.Running,
+	},
+	{
+		Action: container.Remove,
+		State:  wsData.Built,
+	},
+}
+
 func Remove(args []string) {
 	workspaceName := args[0]
 	containerState := wsUtil.GetState(workspaceName)
@@ -44,20 +55,22 @@ func Remove(args []string) {
 		return
 	}
 
-	fmt.Println("removing workspace...")
+	fmt.Println("removing workspace")
 
-	sequeceConnected := false
-	for _, actionSequence := range actionsSequence {
+	sequeceWSConnected := false
+	for _, actionSequence := range actionsWSSequence {
 		if actionSequence.State == containerState {
-			sequeceConnected = true
+			sequeceWSConnected = true
 		}
 
-		if !sequeceConnected {
+		if !sequeceWSConnected {
 			continue
 		}
 
 		actionSequence.Action(workspaceName)
 	}
+
+	// fmt.Println("removing databases")
 }
 
 func removeFile(fileName string) {

@@ -27,14 +27,11 @@ func Create(dataWorkspace map[string]model.ValuesWorkspace) {
 
 func Build(imageName string) {
 	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
-	output, err := cmd.Output()
-	outputStr := string(output)
+	_, err := cmd.Output()
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	println(outputStr)
 }
 
 func Remove(workspaceName string) {
@@ -43,7 +40,7 @@ func Remove(workspaceName string) {
 }
 
 func Exists(imageName string) bool {
-	cmd := exec.Command("docker", "inspect", imageName)
+	cmd := exec.Command("docker", "image", "inspect", imageName)
 	_, err := cmd.Output()
 	return err == nil
 }
