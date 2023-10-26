@@ -59,7 +59,7 @@ func setWokspaceInfo() {
 	}
 
 	wsData.DataWorkspace["bindmount"] = model.ValuesWorkspace{
-		Value:      configWorkspace.Image,
+		Value:      configWorkspace.BindMount,
 		FullFilled: true,
 	}
 
