@@ -7,7 +7,6 @@ import (
 	"strings"
 	"workspace/internal/cmd/workspace/wsCreate"
 	"workspace/internal/cmd/workspace/wsData"
-	"workspace/internal/cmd/workspace/wsRun"
 	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 	"workspace/internal/docker/database"
@@ -32,9 +31,6 @@ func Build(args []string) {
 	args[0] = configWorkspace.Name
 
 	wsCreate.Create(args)
-	wsRun.Run(args)
-
-	buildDatabase()
 	resetConfigWorkspace()
 }
 

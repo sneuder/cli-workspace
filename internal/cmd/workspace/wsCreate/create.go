@@ -9,7 +9,6 @@ import (
 	"workspace/internal/cmd/workspace/wsData"
 	"workspace/internal/config"
 	"workspace/internal/docker/image"
-	"workspace/internal/docker/network"
 	"workspace/internal/file"
 )
 
@@ -85,22 +84,6 @@ func setArgs(args []string) {
 	data := wsData.DataWorkspace["name"]
 	data.Value = workspaceName
 	wsData.DataWorkspace["name"] = data
-}
-
-func createNetwork() {
-	if wsData.DataWorkspace["networks"].Value == "" {
-		return
-	}
-
-	collectionNetwork := strings.Split(wsData.DataWorkspace["networks"].Value, " ")
-
-	for _, networkName := range collectionNetwork {
-		if network.Exists(networkName) {
-			continue
-		}
-
-		network.Create(networkName)
-	}
 }
 
 func resetWorkspaceData() {

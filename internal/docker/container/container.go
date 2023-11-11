@@ -1,7 +1,7 @@
 package container
 
 import (
-	"log"
+	"fmt"
 	"os/exec"
 	"path"
 	"strings"
@@ -22,9 +22,10 @@ func Create(dataContainer map[string]string) {
 	resetContainerCMD()
 }
 
-func Run(containerName string) {
+func Run(containerName string) error {
 	cmd := exec.Command("docker", "start", containerName)
-	cmd.Output()
+	_, err := cmd.Output()
+	return err
 }
 
 func Stop(workspaceName string) {
@@ -50,7 +51,8 @@ func buildContainer() {
 	_, err := cmd.Output()
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("error when building container")
+		return
 	}
 }
 

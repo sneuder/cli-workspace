@@ -49,6 +49,7 @@ var DataContainer = map[string]string{
 	"name":      "",
 	"bindmount": "",
 	"ports":     "",
+	"networks":  "",
 }
 
 var DataDB = map[string]model.ValuesWorkspace{

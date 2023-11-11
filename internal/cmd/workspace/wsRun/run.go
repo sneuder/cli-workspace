@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsDependency"
 	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 	"workspace/internal/docker/container"
@@ -13,6 +14,8 @@ import (
 )
 
 func Run(args []string) {
+	defer resetDataContainer()
+
 	workspaceName := args[0]
 	containerState := wsUtil.GetState(workspaceName)
 
@@ -25,14 +28,14 @@ func Run(args []string) {
 		return
 	}
 
-	// build the container process
-	fmt.Println("starting workspace")
-
 	wsData.DataContainer["name"] = workspaceName
 	getDataFromFileConfig()
-	container.Create(wsData.DataContainer)
 
-	resetDataContainer()
+	// build the container process
+	fmt.Println("starting workspace")
+	dependenciesContainer()
+
+	container.Create(wsData.DataContainer)
 }
 
 func rebuildImage(workspaceName string) {
@@ -69,7 +72,12 @@ func canContinueBasedOnAction(workspaceName string, containerState wsData.State)
 	// if the container exists and we do not have to built it again
 	if containerState == wsData.Built {
 		fmt.Println("starting workspace")
-		container.Run(workspaceName)
+		err := container.Run(workspaceName)
+
+		if err != nil {
+			fmt.Println("problems with dependencies: networks, etc..")
+		}
+
 		return false
 	}
 
@@ -87,4 +95,8 @@ func resetDataContainer() {
 	for key := range wsData.DataContainer {
 		wsData.DataContainer[key] = ""
 	}
+}
+
+func dependenciesContainer() {
+	wsDependency.Networks(wsData.DataContainer["networks"])
 }
