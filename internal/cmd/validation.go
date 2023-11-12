@@ -26,6 +26,15 @@ var validationArgs = map[string]map[string]map[int]string{
 			1: validationMesssages.ContainerName,
 			2: validationMesssages.BinMountPath,
 		},
+		"start": {
+			0: validationMesssages.ContainerName,
+		},
+		"stop": {
+			0: validationMesssages.ContainerName,
+		},
+		"remove": {
+			0: validationMesssages.ContainerName,
+		},
 	},
 	string(constants.ActionWorkspace): {
 		"run": {

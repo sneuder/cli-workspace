@@ -7,6 +7,7 @@ import (
 	"workspace/internal/cmd/basics"
 	"workspace/internal/cmd/dockerFast/dfBuild"
 	"workspace/internal/cmd/dockerFast/dfRun"
+	"workspace/internal/cmd/dockerFast/dfStart"
 	"workspace/internal/cmd/workspace/wsBuild"
 	"workspace/internal/cmd/workspace/wsLs"
 	"workspace/internal/cmd/workspace/wsRemove"
@@ -29,6 +30,7 @@ var actionsCMD = map[string]map[string]ActionCMD{
 	},
 	string(constants.ActionDocker): {
 		"run":   dfRun.Run,
+		"start": dfStart.Start,
 		"build": dfBuild.Build,
 	},
 	string(constants.ActionClear): {
