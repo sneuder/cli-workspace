@@ -103,11 +103,11 @@ func canContinue(workspaceConfigError error) bool {
 }
 
 func buildDatabase() {
-	fmt.Println("building databases...")
 	if len(configWorkspace.Databases) == 0 {
 		return
 	}
 
+	fmt.Println("building databases...")
 	for _, db := range configWorkspace.Databases {
 		database.Build(db)
 	}

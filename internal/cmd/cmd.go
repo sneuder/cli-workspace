@@ -6,7 +6,6 @@ import (
 	"strings"
 	"workspace/internal/cmd/basics"
 	"workspace/internal/cmd/workspace/wsBuild"
-	"workspace/internal/cmd/workspace/wsCreate"
 	"workspace/internal/cmd/workspace/wsLs"
 	"workspace/internal/cmd/workspace/wsRemove"
 	"workspace/internal/cmd/workspace/wsRun"
@@ -29,7 +28,6 @@ var subActionsToValidateArgs = []string{
 var actionsCMD = map[string]map[string]ActionCMD{
 	string(constants.ActionWorkspace): {
 		"workspace": wsUtil.DecribeCMD,
-		"create":    wsCreate.Create,
 		"run":       wsRun.Run,
 		"build":     wsBuild.Build,
 		"stop":      wsStop.Stop,
