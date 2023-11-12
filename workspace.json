@@ -1,6 +1,8 @@
 {
-  "name": "esneider2",
-  "image": "golang:1.21.1-bookworm",
-  "tools": [],
-  "ports": []
+  "name": "cliworkspace",
+  "image": "golang:1.21.1",
+  "tools": ["git", "make", "zip"],
+  "networks": [],
+  "ports": [],
+  "databases": []
 }

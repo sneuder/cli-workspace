@@ -3,43 +3,52 @@ package docker
 import (
 	"encoding/json"
 	"os/exec"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/model"
 )
 
-type State struct {
-	Status     string `json:"Status"`
-	Running    bool   `json:"Running"`
-	Paused     bool   `json:"Paused"`
-	Restarting bool   `json:"Restarting"`
-	OOMKilled  bool   `json:"OOMKilled"`
-	Dead       bool   `json:"Dead"`
-	Pid        int    `json:"Pid"`
-	ExitCode   int    `json:"ExitCode"`
-	Error      string `json:"Error"`
-	StartedAt  string `json:"StartedAt"`
-	FinishedAt string `json:"FinishedAt"`
-}
-
-type ContainerInfo struct {
-	ID      string `json:"Id"`
-	Created string `json:"Created"`
-	Path    string `json:"Path"`
-	State   State  `json:"State"`
-}
-
-func GetContainerInfo(workspaceName string) (ContainerInfo, error) {
-	cmd := exec.Command("docker", "inspect", workspaceName)
+func GetContainerInfo(containerName string) (model.ContainerInfo, error) {
+	cmd := exec.Command("docker", "inspect", containerName)
 	output, err := cmd.Output()
 
 	if err != nil {
-		return ContainerInfo{}, err
+		return model.ContainerInfo{}, err
 	}
 
-	var containerInfo []ContainerInfo
+	var containerInfo []model.ContainerInfo
 	err = json.Unmarshal(output, &containerInfo)
 
 	if err != nil {
-		return ContainerInfo{}, err
+		return model.ContainerInfo{}, err
 	}
 
 	return containerInfo[0], nil
+}
+
+func ExistsElements(elementType string, elementName string) bool {
+	cmd := exec.Command("docker", elementType, "inspect", elementName)
+	_, err := cmd.Output()
+	return err == nil
+}
+
+func GetState(containerName string) wsData.State {
+	containerInfo, err := GetContainerInfo(containerName)
+
+	if err != nil {
+		return wsData.Nonexistent
+	}
+
+	if containerInfo.State.Status == "" {
+		return wsData.Instanced
+	}
+
+	if containerInfo.State.Status == "exited" {
+		return wsData.Built
+	}
+
+	if containerInfo.State.Status == "running" {
+		return wsData.Running
+	}
+
+	return wsData.Instanced
 }

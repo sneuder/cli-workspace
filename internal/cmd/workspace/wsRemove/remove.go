@@ -1,8 +1,10 @@
-package workspace
+package wsRemove
 
 import (
 	"fmt"
 	"path"
+	"workspace/internal/cmd/workspace/wsData"
+	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
 	"workspace/internal/docker/container"
 	"workspace/internal/docker/image"
@@ -11,55 +13,64 @@ import (
 
 type ActionSequence struct {
 	Action func(string)
-	State  State
+	State  wsData.State
 }
 
-var actionsSequence = []ActionSequence{
+var actionsWSSequence = []ActionSequence{
 	{
 		Action: container.Stop,
-		State:  Running,
+		State:  wsData.Running,
 	},
 	{
 		Action: container.Remove,
-		State:  Built,
+		State:  wsData.Built,
 	},
 	{
 		Action: image.Remove,
-		State:  Instanced,
+		State:  wsData.Instanced,
 	},
 	{
 		Action: removeFile,
-		State:  Inactive,
+		State:  wsData.Inactive,
+	},
+}
+
+var actionsDBSequence = []ActionSequence{
+	{
+		Action: container.Stop,
+		State:  wsData.Running,
+	},
+	{
+		Action: container.Remove,
+		State:  wsData.Built,
 	},
 }
 
 func Remove(args []string) {
-
-	if len(args) == 0 {
-		fmt.Println("workspace name needed")
-		return
-	}
-
 	workspaceName := args[0]
-	containerState := getState(workspaceName)
+	containerState := wsUtil.GetState(workspaceName)
 
-	if containerState == Nonexistent {
+	if containerState == wsData.Nonexistent {
 		fmt.Println("workspace does not exist")
 		return
 	}
 
-	sequeceConnected := false
-	for _, actionSequence := range actionsSequence {
+	fmt.Println("removing workspace")
+
+	sequeceWSConnected := false
+	for _, actionSequence := range actionsWSSequence {
 		if actionSequence.State == containerState {
-			sequeceConnected = true
+			sequeceWSConnected = true
 		}
 
-		if !sequeceConnected {
+		if !sequeceWSConnected {
 			continue
 		}
 
 		actionSequence.Action(workspaceName)
 	}
+
+	// fmt.Println("removing databases")
 }
 
 func removeFile(fileName string) {

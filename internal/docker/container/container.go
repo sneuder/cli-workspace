@@ -1,7 +1,7 @@
 package container
 
 import (
-	"log"
+	"fmt"
 	"os/exec"
 	"path"
 	"strings"
@@ -10,23 +10,49 @@ import (
 
 var buildContainerCMD = []string{}
 
-func StartContainerProcess(dataContainer map[string]string) {
+func Create(dataContainer map[string]string) {
 	setInitializer()
 
 	setBindMount(dataContainer["bindmount"])
 	setExposePort(dataContainer["ports"])
+	setNetworks(dataContainer["networks"])
 	setContainerName(dataContainer["name"])
 
 	buildContainer()
+	resetContainerCMD()
 }
+
+func Run(containerName string) error {
+	cmd := exec.Command("docker", "start", containerName)
+	_, err := cmd.Output()
+	return err
+}
+
+func Stop(workspaceName string) {
+	cmd := exec.Command("docker", "container", "stop", workspaceName)
+	cmd.Output()
+}
+
+func Exists(containerName string) bool {
+	cmd := exec.Command("docker", "container", "inspect", containerName)
+	_, err := cmd.Output()
+	return err == nil
+}
+
+func Remove(workspaceName string) {
+	cmd := exec.Command("docker", "container", "rm", workspaceName)
+	cmd.Output()
+}
+
+//...
 
 func buildContainer() {
 	cmd := exec.Command(buildContainerCMD[0], buildContainerCMD[1:]...)
-
 	_, err := cmd.Output()
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("error when building container")
+		return
 	}
 }
 
@@ -56,17 +82,18 @@ func setBindMount(pathBindMount string) {
 	buildContainerCMD = append(buildContainerCMD, "--mount", bindMountPartCMD)
 }
 
-func Run(workspaceName string) {
-	cmd := exec.Command("docker", "start", workspaceName)
-	cmd.Output()
+func setNetworks(networks string) {
+	if networks == "" {
+		return
+	}
+
+	collectionNetwork := strings.Split(networks, " ")
+
+	for _, network := range collectionNetwork {
+		buildContainerCMD = append(buildContainerCMD, "--network="+network)
+	}
 }
 
-func Stop(workspaceName string) {
-	cmd := exec.Command("docker", "container", "stop", workspaceName)
-	cmd.Output()
-}
-
-func Remove(workspaceName string) {
-	cmd := exec.Command("docker", "container", "rm", workspaceName)
-	cmd.Output()
+func resetContainerCMD() {
+	buildContainerCMD = []string{}
 }

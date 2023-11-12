@@ -35,3 +35,17 @@ func JoinPathArgs(partsPath []string) string {
 	argPath = strings.Trim(argPath, `"'`)
 	return argPath
 }
+
+func ContainsString(slice []string, target string) bool {
+	for _, item := range slice {
+		if item == target {
+			return true
+		}
+	}
+	return false
+}
+
+func ContainsUpperCases(stringToEvaluate string) bool {
+	baseString := stringToEvaluate
+	return baseString != strings.ToLower(stringToEvaluate)
+}

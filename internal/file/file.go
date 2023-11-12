@@ -38,9 +38,14 @@ func Write(data []byte) {
 	}
 }
 
-func Read(filePath string) string {
-	data, _ := os.ReadFile(filePath)
-	return string(data)
+func Read(filePath string) (string, error) {
+	data, err := os.ReadFile(filePath)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
 }
 
 func isFileEmpty() bool {

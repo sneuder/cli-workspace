@@ -9,7 +9,7 @@ import (
 	"workspace/internal/model"
 )
 
-func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
+func Create(dataWorkspace map[string]model.ValuesWorkspace) {
 	file.Open("dockerfile", config.PathDirs["workspaces"])
 
 	setImage(dataWorkspace["image"].Value)
@@ -21,9 +21,31 @@ func StartImageProcess(dataWorkspace map[string]model.DataWorkspace) {
 	setCMD()
 
 	file.Close()
-	BuildImage(dataWorkspace["name"].Value)
+	Build(dataWorkspace["name"].Value)
 	file.Rename("dockerfile", dataWorkspace["name"].Value+"-workspace")
 }
+
+func Build(imageName string) {
+	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
+	_, err := cmd.Output()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Remove(workspaceName string) {
+	cmd := exec.Command("docker", "image", "rm", workspaceName)
+	cmd.Output()
+}
+
+func Exists(imageName string) bool {
+	cmd := exec.Command("docker", "image", "inspect", imageName)
+	_, err := cmd.Output()
+	return err == nil
+}
+
+//...
 
 func setImage(value string) {
 	image := "FROM " + value
@@ -65,34 +87,4 @@ func setPorts(ports string) {
 func setCMD() {
 	cmd := `CMD ["sleep", "infinity"]`
 	file.Write([]byte(cmd))
-}
-
-func BuildImage(imageName string) {
-	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
-
-	output, err := cmd.Output()
-
-	outputStr := string(output)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	println(outputStr)
-}
-
-func Remove(workspaceName string) {
-	cmd := exec.Command("docker", "image", "rm", workspaceName)
-	cmd.Output()
-}
-
-func Exists(imageName string) bool {
-	cmd := exec.Command("docker", "inspect", imageName)
-	_, err := cmd.Output()
-
-	if err != nil {
-		return false
-	}
-
-	return true
 }
