@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 	"workspace/internal/cmd/basics"
+	"workspace/internal/cmd/dockerFast/dfBuild"
+	"workspace/internal/cmd/dockerFast/dfRun"
 	"workspace/internal/cmd/workspace/wsBuild"
 	"workspace/internal/cmd/workspace/wsLs"
 	"workspace/internal/cmd/workspace/wsRemove"
@@ -12,18 +14,9 @@ import (
 	"workspace/internal/cmd/workspace/wsStop"
 	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/constants"
-	"workspace/internal/util"
 )
 
 type ActionCMD func([]string)
-
-var subActionsToValidateArgs = []string{
-	string(constants.SubActionWSCreate),
-	string(constants.SubActionWSStop),
-	string(constants.SubActionWSRun),
-	string(constants.SubActionWSBuild),
-	string(constants.SubActionWSRemove),
-}
 
 var actionsCMD = map[string]map[string]ActionCMD{
 	string(constants.ActionWorkspace): {
@@ -33,6 +26,10 @@ var actionsCMD = map[string]map[string]ActionCMD{
 		"stop":      wsStop.Stop,
 		"rm":        wsRemove.Remove,
 		"ls":        wsLs.Ls,
+	},
+	string(constants.ActionDocker): {
+		"run":   dfRun.Run,
+		"build": dfBuild.Build,
 	},
 	string(constants.ActionClear): {
 		"clear": basics.Clear,
@@ -90,27 +87,9 @@ func receiveAction(actionKeys []string) {
 		return
 	}
 
-	if !existActionArgs(actionKeys) {
+	if !validateArgs(actionKeys, actionKeys[2:]) {
 		return
 	}
 
 	action(actionKeys[2:])
-}
-
-func existActionArgs(actionKeys []string) bool {
-	existArgToValidate := util.ContainsString(subActionsToValidateArgs, actionKeys[1])
-	existsArgAction := len(actionKeys) >= 3
-
-	if existArgToValidate && !existsArgAction {
-		message := "workspace name required"
-
-		if string(constants.SubActionWSBuild) == actionKeys[1] {
-			message = "workspace.json path required"
-		}
-
-		println(message)
-		return false
-	}
-
-	return true
 }

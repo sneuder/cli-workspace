@@ -40,7 +40,7 @@ func Run(args []string) {
 
 func rebuildImage(workspaceName string) {
 	file.Rename(workspaceName+"-workspace", "dockerfile")
-	image.Build(workspaceName)
+	image.Build(workspaceName, config.PathDirs["workspaces"])
 	file.Rename("dockerfile", workspaceName+"-workspace")
 }
 

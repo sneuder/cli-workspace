@@ -21,12 +21,12 @@ func Create(dataWorkspace map[string]model.ValuesWorkspace) {
 	setCMD()
 
 	file.Close()
-	Build(dataWorkspace["name"].Value)
+	Build(dataWorkspace["name"].Value, config.PathDirs["workspaces"])
 	file.Rename("dockerfile", dataWorkspace["name"].Value+"-workspace")
 }
 
-func Build(imageName string) {
-	cmd := exec.Command("docker", "build", "-t", imageName, config.PathDirs["workspaces"])
+func Build(imageName string, path string) {
+	cmd := exec.Command("docker", "build", "-t", imageName, path)
 	_, err := cmd.Output()
 
 	if err != nil {
