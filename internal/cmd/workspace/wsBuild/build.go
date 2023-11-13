@@ -20,8 +20,6 @@ func Build(args []string) {
 	defer resetConfigWorkspace()
 	workspaceConfigError := getWorkspaceConfig(args)
 
-	println(configWorkspace.Name)
-
 	if !canContinue(workspaceConfigError) {
 		return
 	}
