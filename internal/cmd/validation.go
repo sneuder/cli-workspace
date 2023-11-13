@@ -6,17 +6,19 @@ import (
 )
 
 type ValidationMessages struct {
-	WorkspaceName string
-	ImageName     string
-	ContainerName string
-	BinMountPath  string
+	WorkspaceName     string
+	ImageName         string
+	ContainerName     string
+	BinMountPath      string
+	PathWorkspaceJson string
 }
 
 var validationMesssages = ValidationMessages{
-	WorkspaceName: "workspace name required",
-	ImageName:     "image name required",
-	ContainerName: "container name required",
-	BinMountPath:  "bind path required",
+	WorkspaceName:     "workspace name required",
+	ImageName:         "image name required",
+	ContainerName:     "container name required",
+	BinMountPath:      "bind path required",
+	PathWorkspaceJson: "workspace.json path required",
 }
 
 var validationArgs = map[string]map[string]map[int]string{
@@ -41,7 +43,7 @@ var validationArgs = map[string]map[string]map[int]string{
 			0: validationMesssages.WorkspaceName,
 		},
 		"build": {
-			0: validationMesssages.WorkspaceName,
+			0: validationMesssages.PathWorkspaceJson,
 		},
 		"rm": {
 			0: validationMesssages.WorkspaceName,

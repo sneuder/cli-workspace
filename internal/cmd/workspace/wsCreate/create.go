@@ -1,11 +1,8 @@
 package wsCreate
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"path"
-	"strings"
 	"workspace/internal/cmd/workspace/wsData"
 	"workspace/internal/config"
 	"workspace/internal/docker/image"
@@ -22,7 +19,6 @@ func Create(args []string) {
 
 	// seting data
 	setArgs(args)
-	getDataWorkspace()
 
 	// build process
 	image.Create(wsData.DataWorkspace)
@@ -36,31 +32,6 @@ func validateExistance(workspaceName string) bool {
 	filePathWorkspace := path.Join(config.PathDirs["workspaces"], workspaceName+"-workspace")
 	exists := image.Exists(workspaceName) || file.FileExists(filePathWorkspace)
 	return exists
-}
-
-func getDataWorkspace() {
-	reader := bufio.NewReader(os.Stdin)
-
-	for i := 0; i < len(wsData.OrderToGetData); i++ {
-		data := wsData.DataWorkspace[wsData.OrderToGetData[i]]
-
-		if data.FullFilled {
-			continue
-		}
-
-		fmt.Print(data.Text)
-
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-
-		if data.Required && input == "" {
-			i -= 1
-			continue
-		}
-
-		data.Value = input
-		wsData.DataWorkspace[wsData.OrderToGetData[i]] = data
-	}
 }
 
 func setConfigFile() {

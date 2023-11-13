@@ -9,7 +9,6 @@ import (
 	"workspace/internal/cmd/workspace/wsData"
 	"workspace/internal/cmd/workspace/wsUtil"
 	"workspace/internal/config"
-	"workspace/internal/docker/database"
 	"workspace/internal/file"
 	"workspace/internal/model"
 	"workspace/internal/util"
@@ -18,7 +17,10 @@ import (
 var configWorkspace model.ConfigWorkspace
 
 func Build(args []string) {
+	defer resetConfigWorkspace()
 	workspaceConfigError := getWorkspaceConfig(args)
+
+	println(configWorkspace.Name)
 
 	if !canContinue(workspaceConfigError) {
 		return
@@ -31,7 +33,6 @@ func Build(args []string) {
 	args[0] = configWorkspace.Name
 
 	wsCreate.Create(args)
-	resetConfigWorkspace()
 }
 
 func getWorkspaceConfig(args []string) error {
@@ -88,6 +89,10 @@ func canContinue(workspaceConfigError error) bool {
 		return false
 	}
 
+	if !requiredData() {
+		return false
+	}
+
 	if util.ContainsUpperCases(configWorkspace.Name) {
 		fmt.Println("workspace name has to be in lowercase")
 		return false
@@ -102,15 +107,18 @@ func canContinue(workspaceConfigError error) bool {
 	return true
 }
 
-func buildDatabase() {
-	if len(configWorkspace.Databases) == 0 {
-		return
+func requiredData() bool {
+	if configWorkspace.Name == "" {
+		fmt.Println("workspace name required")
+		return false
 	}
 
-	fmt.Println("building databases...")
-	for _, db := range configWorkspace.Databases {
-		database.Build(db)
+	if configWorkspace.Image == "" {
+		fmt.Println("workspace image required")
+		return false
 	}
+
+	return true
 }
 
 func getPathWorkSpaceInfo(args []string) string {
